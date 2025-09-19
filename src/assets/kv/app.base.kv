@@ -1,0 +1,39 @@
+<BaseMDNavigationItem>
+
+    MDNavigationItemIcon:
+        icon: root.icon
+
+    MDNavigationItemLabel:
+        text: root.text
+
+
+MDBoxLayout:
+    orientation: "vertical"
+
+    MDScreenManager:
+        id: screen_manager
+
+    MDNavigationBar:
+        id: navbar
+        on_switch_tabs: app.on_switch_tabs(args[1].text)
+
+        BaseMDNavigationItem:
+            icon: 'magnify'
+            text: "Feed"
+            active: True
+
+        BaseMDNavigationItem:
+            icon: "heart-outline"
+            text: "Favourites"
+
+        BaseMDNavigationItem:
+            icon: 'plus-box-outline'
+            text: "Post"
+        
+        BaseMDNavigationItem:
+            icon: "chat-outline"
+            text: "Chats"
+        
+        BaseMDNavigationItem:
+            icon: "menu"
+            text: "Menu"

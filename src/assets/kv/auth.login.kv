@@ -1,0 +1,93 @@
+# Login screen Class
+<LoginScreen>:
+    # Background Color
+    md_bg_color: self.theme_cls.backgroundColor
+
+    # Single vertical container for everything
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "40dp"
+        spacing: "24dp"
+        adaptive_height: True
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        size_hint: 0.9, None
+        height: self.minimum_height
+
+        # Login Label
+        MDLabel:
+            text: "Вход"
+            halign: "center"
+            font_style: "Headline"
+            font_size: "24sp"
+            theme_text_color: "Primary"
+            size_hint_y: None
+            height: "60dp"
+        
+        # Phone field
+        MDTextField:
+            id: phone_field
+            mode: "outlined"
+            size_hint_y: None
+            height: "56dp"
+            on_text_validate: password_field.focus = True
+
+            MDTextFieldMaxLengthText:
+                max_text_length: 12
+
+            MDTextFieldLeadingIcon:
+                icon: "phone"
+
+            MDTextFieldHintText:
+                text: "Номер телефона"
+
+            MDTextFieldHelperText:
+                text: "+7(***)*** ** **"
+                mode: "persistent"
+        
+        # Password field
+        MDTextField:
+            id: password_field
+            mode: "outlined"
+            password: True
+            height: "56dp"
+            size_hint_y: None
+            on_text_validate: root.handle_login()
+        
+            MDTextFieldMaxLengthText:
+                max_text_length: 30
+
+            MDTextFieldLeadingIcon:
+                icon: "lock"
+
+            MDTextFieldHintText:
+                text: "Пароль"
+
+            MDTextFieldHelperText:
+                text: "Введите ваш пароль"
+                mode: "on_focus"
+        
+        # Spacer to separate inputs from buttons
+        Widget:
+            size_hint_y: None
+            height: "20dp"
+        
+        # Login Button (main button)
+        MDButton:
+            style: "filled"
+            size_hint_y: None
+            height: "48dp"
+            on_release: root.handle_login()
+
+            MDButtonText:
+                text: "Войти"
+
+        # Register Button (subtle and smaller)
+        MDButton:
+            style: "text"
+            size_hint_y: None
+            height: "36dp"
+            on_release: root.go_to_register()
+
+            MDButtonText:
+                text: "Регистрация"
+                font_size: "14sp"

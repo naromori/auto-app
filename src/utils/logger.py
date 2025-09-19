@@ -1,23 +1,59 @@
+from __future__ import annotations
 import os
 import logging
+from kivy.logger import ColonSplittingLogRecord, ColoredLogRecord, UncoloredLogRecord
+from typing import Union
+
+
+class AppKivyFormatter(logging.Formatter):
+    """Custom formatter that adds time/level to Kivy's colon-splitting format.
+
+    Format: [Time] [Level] [Module] message
+    """
+
+    def __init__(self, *args, use_color=False, **kwargs):
+        super().__init__("[%(asctime)s] [%(levelname)-8s] %(message)s",
+                         datefmt="%H:%M:%S", *args, **kwargs)
+        self._coloring_cls = (
+            ColoredLogRecord if use_color else UncoloredLogRecord)
+
+    def format(self, record):
+        return super().format(
+            self._coloring_cls(ColonSplittingLogRecord(record)))
 
 
 class AppLogger:
     """Singleton logger class that writes to `latest.log`. Previous `latest.log` gets *removed*."""
-    _logger = None
-    _instance = None
 
-    def __new__(cls):
+    _logger: logging.Logger | None = None
+    _instance: AppLogger | None = None
+
+    def __new__(cls, level:logging._Level=logging.WARN) -> AppLogger:
         if cls._instance is None:
             cls._instance = super(AppLogger, cls).__new__(cls)
         return cls._instance
-    
-    def __init__(self, name='app_logger', log_file='latest.log', level=logging.DEBUG):
-        # Will initialize once per session
+
+    def __init__(self, name: str = "app_logger", log_file: str = "latest.log", level: Union[int, str] = logging.DEBUG) -> None:
         if self._logger is None:
-            self._setup_logger(name, log_file, level)
-    
-    def _setup_logger(self, name, log_file, level):
+            level_fmt = logging.WARN
+            
+            if isinstance(level, int):
+                level_fmt = level
+            elif isinstance(level, str):
+                LEVEL_MAP = {
+                    "DEBUG": logging.DEBUG,
+                    "INFO": logging.INFO,
+                    "WARN": logging.WARNING,
+                    "ERROR": logging.ERROR,
+                    "CRITICAL": logging.CRITICAL
+                }
+                level_fmt = LEVEL_MAP.get(level.upper(), logging.WARN)
+            else:
+                level_fmt = logging.WARN
+
+            self._setup_logger(name, log_file, level_fmt)
+
+    def _setup_logger(self, name: str, log_file: str, level: logging._Level) -> None:
         """Internal method for logging setup"""
 
         if os.path.exists(log_file):
@@ -28,41 +64,59 @@ class AppLogger:
 
         self._logger.handlers.clear()
 
-        file_handler = logging.FileHandler(log_file, mode='w')
+        file_handler = logging.FileHandler(log_file, mode="w")
         file_handler.setLevel(level)
 
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
+        formatter = AppKivyFormatter(use_color=False)
         file_handler.setFormatter(formatter)
         self._logger.addHandler(file_handler)
-    
-    @property
-    def logger(self):
-        """Get the logger instance"""
-        return self._logger
-    
-    def debug(self, message):
-        """Log debug message"""
-        self._logger.debug(message)
-    
-    def info(self, message):
-        """Log info message"""
-        self._logger.info(message)
-    
-    def warning(self, message):
-        """Log warning message"""
-        self._logger.warning(message)
-    
-    def warn(self, message):
-        """Log warning message"""
-        self._logger.warning(message)
-    
-    def error(self, message):
-        """Log error message"""
-        self._logger.error(message)
 
-    def critical(self, message):
+        kivy_logger = logging.getLogger("kivy")
+        kivy_logger.addHandler(file_handler)
+        kivy_logger.setLevel(level)
+
+        kivymd_logger = logging.getLogger("kivymd")
+        kivymd_logger.addHandler(file_handler)
+        kivymd_logger.setLevel(level)
+
+    def debug(self, message: object, module: str = "") -> None:
+        """Log debug message"""
+        if self._logger is not None:
+            formatted_message = f"{module}: {message}" if module != "" else message
+            self._logger.debug(formatted_message)
+
+    def info(self, message: object, module: str = "") -> None:
+        """Log info message"""
+        if self._logger is not None:
+            formatted_message = f"{module}: {message}" if module != "" else message
+            self._logger.info(formatted_message)
+
+    def warning(self, message: object, module: str = "") -> None:
+        """Log warning message"""
+        if self._logger is not None:
+            formatted_message = f"{module}: {message}" if module != "" else message
+            self._logger.warning(formatted_message)
+
+    def warn(self, message: object, module: str = "") -> None:
+        """Log warning message"""
+        if self._logger is not None:
+            formatted_message = f"{module}: {message}" if module != "" else message
+            self._logger.warning(formatted_message)
+
+    def error(self, message: object, module: str = "") -> None:
+        """Log error message"""
+        if self._logger is not None:
+            formatted_message = f"{module}: {message}" if module != "" else message
+            self._logger.error(formatted_message)
+
+    def critical(self, message: object, module: str = "") -> None:
         """Log critical message"""
-        self._logger.critical(message)
+        if self._logger is not None:
+            formatted_message = f"{module}: {message}" if module != "" else message
+            self._logger.critical(formatted_message)
+
+    def log(self, level: logging._Level, message: object, module: str = ""):
+        """Log with runtime level"""
+        if self._logger is not None:
+            formatted_message = f"{module}: {message}" if module != "" else message
+            self._logger.log(level=level, msg=formatted_message)
