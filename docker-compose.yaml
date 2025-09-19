@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  buildozer:
+    build:
+      context: .
+      dockerfile: Dockerfile.buildozer
+    volumes:
+      - .:/app
+    tty: true
+    stdin_open: true

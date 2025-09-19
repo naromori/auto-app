@@ -1,0 +1,28 @@
+FROM python:3.12-slim
+
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    zip \
+    unzip \
+    openjdk-21-jdk \
+    python3-pip \
+    python3-setuptools \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libsqlite3-dev \
+    zlib1g-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
+RUN pip install buildozer cython
+
+ENV ANDROIDSDK_ROOT=/opt/android-sdk
+ENV ANDROIDNDK_ROOT=/opt/android-ndk
+ENV PATH=$PATH:$ANDROIDSDK_ROOT/cmdline-tools/latest/bin:$ANDROIDSDK_ROOT/platform-tools:$ANDROIDNDK_ROOT
+
+WORKDIR /app
+
+CMD ["bash"]

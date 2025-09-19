@@ -1,15 +1,15 @@
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.button import Button
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.button import MDIconButton
+from kivymd.uix.anchorlayout import MDAnchorLayout
 
-class AuthScreen(Screen):
+
+class AuthScreen(MDScreen):
     
     def __init__(self, **kw):
         super().__init__(**kw)
         self.name = "AuthScreen"
-        layout = AnchorLayout(
+        layout = MDAnchorLayout(
             anchor_x='center', anchor_y='center')
         
-        label
+        button = MDIconButton(text='Test Button Yay')
         layout.add_widget(button)
-        self.add_widget(layout)

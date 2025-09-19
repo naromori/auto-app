@@ -27,9 +27,11 @@
 
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
+from .envmgr import EnvManager
+
 
 class DBConnection():
 
-    def __init__(self, filename: str):
+    def __init__(self):
+        filename = EnvManager.get("SQLITE_DB_FILENAME")
         self.url = f"sqlite:///./{filename}"
-        self.engine
