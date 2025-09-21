@@ -10,6 +10,7 @@ Reexports:
 from .logger import AppLogger
 from .autolog import autolog
 from .envmgr import EnvManager
+from .data_validator import DataValidator
 
 
-__all__ = ["AppLogger", "FSUtils", "autolog", "EnvManager"]
+__all__ = ["AppLogger", "FSUtils", "autolog", "EnvManager", "DataValidator"]

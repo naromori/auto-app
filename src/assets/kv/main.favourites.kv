@@ -1,0 +1,125 @@
+# Post feed screen with users' posts for sale
+<FavouritesScreen>
+    md_bg_color: self.theme_cls.backgroundColor
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "16dp"
+        adaptive_height: True
+
+        # Search section (WIP)
+        MDCard:
+            style: "elevated"
+            size_hint_y: None
+            height: "120dp"
+            md_bg_color: self.theme_cls.surfaceContainerColor
+            padding: "16dp"
+
+            MDBoxLayout:
+                orientation: "vertical"
+                adaptive_height: True
+
+                MDLabel:
+                    text: "Корзина (WIP)"
+                    theme_text_color: "Primary"
+                    halign: "center"
+
+        # Posts grid container
+        MDScrollView:
+            do_scroll_x: False
+
+            MDGridLayout:
+                id: posts_grid
+                cols: 2
+                spacing: "12dp"
+                padding: "16dp", "0dp", "16dp", "16dp"
+                adaptive_height: True
+
+                # Car post cards will be added programmatically
+                # Example structure for each post:
+                MDCard:
+                    style: "elevated"
+                    size_hint_y: None
+                    height: "280dp"
+                    md_bg_color: self.theme_cls.surfaceContainerColor
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: "12dp"
+                        spacing: "8dp"
+
+                        # Car image placeholder
+                        MDCard:
+                            style: "filled"
+                            size_hint_y: None
+                            height: "160dp"
+                            md_bg_color: self.theme_cls.surfaceContainerHighColor
+
+                            MDLabel:
+                                text: "Car Image"
+                                halign: "center"
+                                valign: "middle"
+                                theme_text_color: "Hint"
+
+                        # Car details
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            adaptive_height: True
+                            spacing: "4dp"
+
+                            MDLabel:
+                                text: "Car Name"
+                                theme_text_color: "Primary"
+                                font_style: "Title"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                            MDLabel:
+                                text: "$XX,XXX"
+                                theme_text_color: "Secondary"
+                                font_style: "Body"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                # Duplicate the card structure for more examples
+                MDCard:
+                    style: "elevated"
+                    size_hint_y: None
+                    height: "280dp"
+                    md_bg_color: self.theme_cls.surfaceContainerColor
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: "12dp"
+                        spacing: "8dp"
+
+                        MDCard:
+                            style: "filled"
+                            size_hint_y: None
+                            height: "160dp"
+                            md_bg_color: self.theme_cls.surfaceContainerHighColor
+
+                            MDLabel:
+                                text: "Car Image"
+                                halign: "center"
+                                valign: "middle"
+                                theme_text_color: "Hint"
+
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            adaptive_height: True
+                            spacing: "4dp"
+
+                            MDLabel:
+                                text: "Car Name"
+                                theme_text_color: "Primary"
+                                font_style: "Title"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                            MDLabel:
+                                text: "$XX,XXX"
+                                theme_text_color: "Secondary"
+                                font_style: "Body"
+                                size_hint_y: None
+                                height: self.texture_size[1]

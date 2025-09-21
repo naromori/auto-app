@@ -8,8 +8,10 @@ with phone number and password validation.
 from typing import Any
 
 from kivymd.uix.screen import MDScreen
+from kivymd.app import MDApp
 from kivy.lang import Builder
-from utils import AppLogger
+from utils import AppLogger, DataValidator
+from database import UserRepository
 
 Builder.load_file("./assets/kv/auth.login.kv")
 
@@ -26,6 +28,9 @@ class LoginScreen(MDScreen):
         super().__init__(**kwargs)
         self.logger = AppLogger()
         self.logger.debug("LoginScreen initialized")
+
+    def get_app(self) -> MDApp:
+        return MDApp.get_running_app()
 
     def handle_login(self) -> None:
         """
@@ -45,32 +50,24 @@ class LoginScreen(MDScreen):
             self.show_error_message("Пожалуйста, заполните все поля")
             return
 
-        
-        if len(phone) < 11:
-            self.logger.warning(f"Login failed: Invalid phone format - {phone}")
-            self.show_error_message("Неверный логин или пароль")
+        if not DataValidator.validate_phone_number(phone):
+            self.logger.warning("Login failed: Phone validation failed")
+            self.show_error_message("Неверный формат номера")
             return
 
+        app = self.get_app()
+        user_repo: UserRepository = app.user_repo
+
+        if user_repo.auth(phone=phone, password=password):
+            self.logger.info("Login successful - switching to main app")
+            self.ids.phone_field.text = ""
+            self.ids.password_field.text = ""
+            app.switch_to_main_app()
+            return
         
+        self.logger.info("Login unsuccessfull")
+        self.show_error_message("Неправильный логин или пароль")        
 
-        self.ids.phone_field.text = ""
-        self.ids.password_field.text = ""
-
-        # TODO: Normal auth
-        self.logger.info("Login successful - switching to main app")
-
-        from kivymd.app import MDApp
-        app = MDApp.get_running_app()
-        app.switch_to_main_app()
-
-        # if self.authenticate_user(phone, password):
-        #     self.ids.username_field.text = ""
-        #     self.ids.password_field.text = ""
-
-        #     app = self.manager.app
-        #     app.after_login_success()
-        # else:
-        #     self.show_error_dialog("Invalid username or password")
 
     def go_to_register(self) -> None:
         """
@@ -79,8 +76,8 @@ class LoginScreen(MDScreen):
         Switches from login to register screen in the authentication flow.
         """
         self.logger.debug("Navigating to registration screen")
-        from kivymd.app import MDApp
-        app = MDApp.get_running_app()
+
+        app = self.get_app()
         app.switch_auth_screen("register")
 
     def show_error_message(self, message: str) -> None:

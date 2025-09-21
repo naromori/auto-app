@@ -1,0 +1,3 @@
+kivymd==2.0.1
+peewee
+python-dotenv

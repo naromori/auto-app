@@ -1,15 +1,14 @@
 from .prod import ProdConfig
 from .dev import DevConfig
 from .debug import DebugConfig
-from utils import EnvManager
+from os import getenv
 
 
 def get_config():
-    mode = EnvManager.get_env("ENV_MODE")
+    mode = getenv("ENV_MODE")
 
     if not mode:
         return ProdConfig
-    
     match mode:
         case "dev":
             return DevConfig

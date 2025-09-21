@@ -1,16 +1,16 @@
 import re
 
 
-class DataValidators:
+class DataValidator:
 
     @staticmethod
-    def validate_phone_number(phone: str) -> bool:
-        if not phone:
-            return False
+    def clean_phone_number(phone: str) -> str:
 
+        if not phone:
+            return ""
+        
         phone = phone.strip()
 
-        # Check if starts with +7, 7, or 8
         if phone.startswith('+7'):
             phone = phone[2:]
         elif phone.startswith('7'):
@@ -18,18 +18,21 @@ class DataValidators:
         elif phone.startswith('8'):
             phone = phone[1:]
         else:
-            return False
+            return ""
 
-        # Remove all non-digit characters
-        digits = re.sub(r'\D', '', phone)
+        return re.sub(r'\D', '', phone)
 
-        # Should have exactly 10 digits after country code
+
+    @staticmethod
+    def validate_phone_number(phone: str) -> bool:
+        
+        digits = DataValidator.clean_phone_number(phone)
+
         if len(digits) != 10:
             return False
 
-        # Check if first 3 digits (area code) are between 900-999
         area_code = int(digits[:3])
-        if not (900 <= area_code <= 999):
+        if not (900 <= area_code <= 999) and area_code not in ["495", "800", "499", "812"]:
             return False
 
         return True

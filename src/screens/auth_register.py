@@ -6,15 +6,14 @@ with phone number, password, and password confirmation validation.
 """
 
 from typing import Any
-
 from kivymd.uix.screen import MDScreen
+from kivymd.app import MDApp
 from kivy.lang import Builder
-from utils import AppLogger
-from services import DataValidators
+from utils import AppLogger, DataValidator
+from database import UserRepository
 
 
 Builder.load_file("./assets/kv/auth.register.kv")
-
 
 class RegisterScreen(MDScreen):
     """
@@ -27,7 +26,10 @@ class RegisterScreen(MDScreen):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.logger = AppLogger()
-        self.logger.debug("RegisterScreen initialized")
+        self.logger.debug("RegisterScreen initialized", "RegisterScreen")
+
+    def get_app(self) -> MDApp:
+        return MDApp.get_running_app()
 
     def handle_register(self) -> None:
         """
@@ -40,27 +42,32 @@ class RegisterScreen(MDScreen):
         password = self.ids.password_field.text
         confirm_password = self.ids.confirm_password_field.text
 
-        self.logger.info(f"Registration attempt for phone: {phone[:3]}***{phone[-2:] if len(phone) >= 5 else '***'}")
+        self.logger.info(f"Registration attempt for phone: {phone[:3]}***{phone[-2:] if len(phone) >= 5 else '***'}", "RegisterScreen")
 
         if not all([phone, password, confirm_password]):
-            self.logger.warn("Registration failed: Missing required fields")
+            self.logger.warn("Registration failed: Missing required fields", "RegisterScreen")
             self.show_error_message("Пожалуйста, заполните все поля")
             return
 
         if password != confirm_password:
-            self.logger.warn("Registration failed: Password confirmation mismatch")
+            self.logger.warn("Registration failed: Password confirmation mismatch", "RegisterScreen")
             self.show_error_message("Пароли не совпадают")
             return
 
-        if not DataValidators.validate_password(password):
-            self.logger.warn(f"Registration failed: Invalid password length - {len(password)} characters")
+        if not DataValidator.validate_password(password):
+            self.logger.warn(f"Registration failed: Invalid password length - {len(password)} characters", "RegisterScreen")
             self.show_error_message("Пароль слишком слабый или длиннее 30 символов")
             return
         
-        if not DataValidators.validate_phone_number(phone):
-            self.logger.warn(f"Registration failed: Invalid phone format - {phone}")
+        if not DataValidator.validate_phone_number(phone):
+            self.logger.warn(f"Registration failed: Invalid phone format - {phone}", "RegisterScreen")
+            self.show_error_message("Неверный формат номера")
+            return
 
-        self.logger.info("Registration validation successful")
+        self.logger.info("Registration validation successful", "RegisterScreen")
+        if not self.register_user(phone, password):
+            self.show_error_message("При регистрации возникла непредвиденная ошибка")
+            return
         self.clear_fields()
         self.show_success_message("Account created successfully!")
 
@@ -79,10 +86,16 @@ class RegisterScreen(MDScreen):
         Note:
             This is a placeholder - replace with actual PostgreSQL integration.
         """
-        # Placeholder - replace with database insertion
-        self.logger.debug(f"Attempting to register user in database: {phone}")
-        self.logger.info(f"User registration successful for: {phone}")
-        return True  # Simulate success
+
+        self.logger.debug(f"Attempting to register user in database: {phone}", "RegisterScreen")
+        repo: UserRepository = self.get_app().user_repo
+        try:
+            repo.create_user(phone, password)
+            self.logger.info(f"User registration successful for: {phone}", "RegisterScreen")
+            return True
+        except Exception as e:
+            self.logger.error(f"Unexpected error: {e}", "RegisterScreen")
+            return False
     
     def go_to_login(self) -> None:
         """
@@ -90,8 +103,7 @@ class RegisterScreen(MDScreen):
 
         Switches from registration to login screen in the authentication flow.
         """
-        self.logger.debug("Navigating back to login screen")
-        from kivymd.app import MDApp
+        self.logger.debug("Navigating back to login screen", "RegisterScreen")
         app = MDApp.get_running_app()
         app.switch_auth_screen("login")
     
@@ -101,7 +113,7 @@ class RegisterScreen(MDScreen):
 
         Resets phone, password, and confirm password fields to empty strings.
         """
-        self.logger.debug("Clearing registration form fields")
+        self.logger.debug("Clearing registration form fields", "RegisterScreen")
         self.ids.phone_field.text = ""
         self.ids.password_field.text = ""
         self.ids.confirm_password_field.text = ""
@@ -113,7 +125,7 @@ class RegisterScreen(MDScreen):
         Args:
             message (str): The error message to display
         """
-        self.logger.debug(f"Showing error message: {message}")
+        self.logger.debug(f"Showing error message: {message}", "RegisterScreen")
         from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 
         snackbar = MDSnackbar(
@@ -131,9 +143,8 @@ class RegisterScreen(MDScreen):
         Args:
             message (str): The success message to display
         """
-        self.logger.info(f"Registration successful - showing success message: {message}")
+        self.logger.info(f"Registration successful - showing success message: {message}", "RegisterScreen")
         from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
-        from kivymd.app import MDApp
 
         snackbar = MDSnackbar(
             MDSnackbarText(text=message),
@@ -144,7 +155,7 @@ class RegisterScreen(MDScreen):
 
         def switch_after_delay(dt: int) -> None:
             """Switch to login screen after delay."""
-            self.logger.debug("Auto-switching to login screen after successful registration")
+            self.logger.debug("Auto-switching to login screen after successful registration", "RegisterScreen")
             app = MDApp.get_running_app()
             app.switch_auth_screen("login")
 

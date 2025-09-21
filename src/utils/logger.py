@@ -3,6 +3,7 @@ import os
 import logging
 from kivy.logger import ColonSplittingLogRecord, ColoredLogRecord, UncoloredLogRecord
 from typing import Union
+from config import get_config
 
 
 class AppKivyFormatter(logging.Formatter):
@@ -28,29 +29,24 @@ class AppLogger:
     _logger: logging.Logger | None = None
     _instance: AppLogger | None = None
 
-    def __new__(cls, level:logging._Level=logging.WARN) -> AppLogger:
+    def __new__(cls) -> AppLogger:
         if cls._instance is None:
             cls._instance = super(AppLogger, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, name: str = "app_logger", log_file: str = "latest.log", level: Union[int, str] = logging.DEBUG) -> None:
+    def __init__(self, name: str = "app_logger", log_file: str = "latest.log") -> None:
         if self._logger is None:
-            level_fmt = logging.WARN
-            
-            if isinstance(level, int):
-                level_fmt = level
-            elif isinstance(level, str):
-                LEVEL_MAP = {
-                    "DEBUG": logging.DEBUG,
-                    "INFO": logging.INFO,
-                    "WARN": logging.WARNING,
-                    "ERROR": logging.ERROR,
-                    "CRITICAL": logging.CRITICAL
-                }
-                level_fmt = LEVEL_MAP.get(level.upper(), logging.WARN)
-            else:
-                level_fmt = logging.WARN
+            config = get_config()
+            level = config.LOG_LEVEL
 
+            LEVEL_MAP = {
+                "DEBUG": logging.DEBUG,
+                "INFO": logging.INFO,
+                "WARN": logging.WARNING,
+                "ERROR": logging.ERROR,
+                "CRITICAL": logging.CRITICAL
+            }
+            level_fmt = LEVEL_MAP.get(level.upper(), logging.WARN)
             self._setup_logger(name, log_file, level_fmt)
 
     def _setup_logger(self, name: str, log_file: str, level: logging._Level) -> None:

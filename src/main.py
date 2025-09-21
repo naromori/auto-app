@@ -6,10 +6,11 @@ from kivymd.uix.navigationbar import MDNavigationItem
 from kivymd.uix.widget import Widget
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
-
-from screens import LoginScreen, RegisterScreen, FeedScreen, FavouritesScreen, ChatsScreen, MenuScreen, AddPostScreen
 from utils import AppLogger, autolog
 from config import get_config
+from screens import LoginScreen, RegisterScreen, FeedScreen, FavouritesScreen, ChatsScreen, MenuScreen, AddPostScreen
+from database import DatabaseManager
+
 
 class BaseMDNavigationItem(MDNavigationItem):
     """
@@ -42,7 +43,10 @@ class AutoApp(MDApp):
         super().__init__()
         #! App Important Variables.
         self.ext_cfg = get_config()
-        self.logger = AppLogger(self.ext_cfg.LOG_LEVEL)
+        self.logger = AppLogger()
+        self.db = DatabaseManager()
+        self.user_repo = self.db.user_repo
+        
         #! The End...
         # self.config TODO: add proper config to the app.
         self.logged_in = False
@@ -151,8 +155,14 @@ class AutoApp(MDApp):
             self.logger.debug(f"Switched to authentication screen: {screen_name}", "Main")
         else:
             self.logger.warning(f"Attempted to switch to auth screen {screen_name} but user is already logged in", "Main")
+    
+    def on_stop(self):
+        self.db.close()
+        return super().on_stop()
 
+    def on_pause(self):
+        self.db.close()
+        return super().on_pause()
 
 if __name__ == "__main__":
-    logger = AppLogger()
     AutoApp().run()
