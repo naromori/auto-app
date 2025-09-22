@@ -12,8 +12,10 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from utils import AppLogger, DataValidator
 from database import UserRepository
+from assets import AUTH_LOGIN
 
-Builder.load_file("./assets/kv/auth.login.kv")
+
+Builder.load_file(f"./assets/kv/{AUTH_LOGIN}")
 
 
 class LoginScreen(MDScreen):

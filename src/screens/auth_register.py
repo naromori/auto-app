@@ -11,9 +11,10 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from utils import AppLogger, DataValidator
 from database import UserRepository
+from assets import AUTH_REGISTER
 
 
-Builder.load_file("./assets/kv/auth.register.kv")
+Builder.load_file(f"./assets/kv/{AUTH_REGISTER}")
 
 class RegisterScreen(MDScreen):
     """

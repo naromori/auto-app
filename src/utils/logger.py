@@ -3,12 +3,11 @@ import os
 import logging
 from kivy.logger import ColonSplittingLogRecord, ColoredLogRecord, UncoloredLogRecord
 from typing import Union
-from config import get_config
 
 
 class AppKivyFormatter(logging.Formatter):
-    """Custom formatter that adds time/level to Kivy's colon-splitting format.
-
+    """
+    Custom formatter that adds time/level to Kivy's colon-splitting format.
     Format: [Time] [Level] [Module] message
     """
 
@@ -24,7 +23,9 @@ class AppKivyFormatter(logging.Formatter):
 
 
 class AppLogger:
-    """Singleton logger class that writes to `latest.log`. Previous `latest.log` gets *removed*."""
+    """
+    Singleton logger class that writes to `latest.log`. Previous `latest.log` gets *removed*.
+    """
 
     _logger: logging.Logger | None = None
     _instance: AppLogger | None = None
@@ -36,8 +37,8 @@ class AppLogger:
 
     def __init__(self, name: str = "app_logger", log_file: str = "latest.log") -> None:
         if self._logger is None:
-            config = get_config()
-            level = config.LOG_LEVEL
+
+            level: str | None = os.getenv("LOG_LEVEL")
 
             LEVEL_MAP = {
                 "DEBUG": logging.DEBUG,
@@ -46,12 +47,15 @@ class AppLogger:
                 "ERROR": logging.ERROR,
                 "CRITICAL": logging.CRITICAL
             }
-            level_fmt = LEVEL_MAP.get(level.upper(), logging.WARN)
+            try:
+                level_fmt = LEVEL_MAP.get(level.upper(), logging.WARN)
+            except:
+                level_fmt = logging.WARN
             self._setup_logger(name, log_file, level_fmt)
 
-    def _setup_logger(self, name: str, log_file: str, level: logging._Level) -> None:
-        """Internal method for logging setup"""
 
+    def _setup_logger(self, name: str, log_file: str, level: logging._Level) -> None:
+        
         if os.path.exists(log_file):
             os.remove(log_file)
 

@@ -1,11 +1,11 @@
 from peewee import Model, AutoField, CharField, BlobField, SqliteDatabase
 from utils import AppLogger
-from config import get_config
+from config import config
 from os.path import dirname, abspath, join
 import os
 import hashlib
 
-config = get_config()
+
 salt_len = config.PASSWORD_SALT_LEN
 iterations = config.PASSWORD_ITERATIONS
 app_path = abspath(dirname(__name__))

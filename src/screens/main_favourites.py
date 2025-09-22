@@ -9,9 +9,10 @@ from typing import Any
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from utils import AppLogger
+from assets import MAIN_FAVOURITES
 
 
-Builder.load_file("./assets/kv/main.favourites.kv")
+Builder.load_file(f"./assets/kv/{MAIN_FAVOURITES}")
 
 class FavouritesScreen(MDScreen):
 

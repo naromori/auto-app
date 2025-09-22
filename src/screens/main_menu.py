@@ -7,11 +7,23 @@ with phone number and password validation.
 
 from typing import Any
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.list import MDListItem
 from kivy.lang import Builder
 from utils import AppLogger
+from assets import MAIN_MENU
+from kivy.properties import StringProperty
 
 
-Builder.load_file("./assets/kv/main.menu.kv")
+
+Builder.load_file(f"./assets/kv/{MAIN_MENU}")
+
+class MenuListItem(MDListItem):
+    
+    icon = StringProperty()
+    text = StringProperty()
+    destination = StringProperty()
+
+
 
 class MenuScreen(MDScreen):
 

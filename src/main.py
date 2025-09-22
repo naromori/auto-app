@@ -7,7 +7,7 @@ from kivymd.uix.widget import Widget
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.screen import MDScreen
 from utils import AppLogger, autolog
-from config import get_config
+from config import config
 from screens import LoginScreen, RegisterScreen, FeedScreen, FavouritesScreen, ChatsScreen, MenuScreen, AddPostScreen
 from database import DatabaseManager
 
@@ -42,7 +42,7 @@ class AutoApp(MDApp):
         """Initialize the app with default settings."""
         super().__init__()
         #! App Important Variables.
-        self.ext_cfg = get_config()
+        self.ext_cfg = config
         self.logger = AppLogger()
         self.db = DatabaseManager()
         self.user_repo = self.db.user_repo
@@ -73,7 +73,7 @@ class AutoApp(MDApp):
         self.screen_manager.add_widget(RegisterScreen(name="register"))
         self.screen_manager.current = "login"
 
-        self.logger.info(f"Initial screen manager built with screens: {", ".join(self.screen_manager.screen_names)}", "Main")
+        self.logger.info(f'Initial screen manager built with screens: {", ".join(self.screen_manager.screen_names)}', 'Main')
         self.logger.debug(f"Starting with current screen: {self.screen_manager.current_screen}", "Main")
 
         return self.screen_manager

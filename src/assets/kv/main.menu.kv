@@ -1,4 +1,17 @@
 # Post feed screen with users' posts for sale
+
+<MenuListItem>
+
+    on_release: root.goto(root.destination)
+
+    MDListItemLeadingIcon:
+        icon: root.icon
+
+    MDListItemHeadlineText:
+        text: root.text
+
+
+
 <MenuScreen>
     md_bg_color: self.theme_cls.backgroundColor
 

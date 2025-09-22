@@ -9,9 +9,10 @@ from typing import Any
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from utils import AppLogger
+from assets import MAIN_CHATS
 
 
-Builder.load_file("./assets/kv/main.chats.kv")
+Builder.load_file(f"./assets/kv/{MAIN_CHATS}")
 
 class ChatsScreen(MDScreen):
 
